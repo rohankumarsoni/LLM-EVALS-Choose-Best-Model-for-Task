@@ -1,0 +1,209 @@
+model,id,difficulty,correct,reason,sql
+GPT-5.6 Terra,1,hard,True,match,"SELECT CAST(SUM(total_runs) AS REAL) / COUNT(DISTINCT match_id) AS average_runs_per_match
+FROM deliveries"
+GPT-5.6 Terra,2,hard,False,mismatch,"WITH batter_runs AS (
+  SELECT
+    batter,
+    SUM(batsman_runs) AS total_runs,
+    SUM(CASE WHEN batsman_runs IN (4, 6) THEN batsman_runs ELSE 0 END) AS boundary_runs
+  FROM deliveries
+  GROUP BY batter
+  HAVING SUM(batsman_runs) >= 500
+)
+SELECT
+  batter,
+  ROUND(100.0 * boundary_runs / total_runs, 2) AS boundary_percentage
+FROM batter_runs
+ORDER BY 1.0 * boundary_runs / total_runs DESC
+LIMIT 1"
+GPT-5.6 Terra,3,hard,True,match,"SELECT COUNT(*)
+FROM (
+  SELECT batter
+  FROM deliveries
+  GROUP BY batter
+  HAVING SUM(batsman_runs) >= 1000
+)"
+GPT-5.6 Terra,4,hard,True,match,"SELECT bowler, COUNT(*) AS ball_count
+FROM deliveries
+WHERE LOWER(COALESCE(extras_type, '')) NOT IN ('wide', 'wides', 'noball', 'noballs', 'no-ball', 'no-balls')
+GROUP BY bowler
+ORDER BY ball_count DESC
+LIMIT 1"
+GPT-5.6 Terra,5,hard,False,gen_error,
+GPT-5.6 Terra,6,hard,False,gen_error,
+GPT-5.6 Terra,7,hard,False,gen_error,
+GPT-5.6 Terra,8,hard,False,gen_error,
+GPT-5.6 Terra,9,brutal,False,gen_error,
+GPT-5.6 Terra,10,brutal,False,gen_error,
+GPT-5.6 Terra,11,brutal,False,gen_error,
+GPT-5.6 Terra,12,brutal,False,gen_error,
+GPT-5.6 Terra,13,brutal,False,gen_error,
+GPT-5.6 Terra,14,brutal,False,gen_error,
+GPT-5.6 Terra,15,brutal,False,gen_error,
+GPT-5.6 Terra,16,brutal,False,gen_error,
+GPT-5.6 Terra,17,brutal,False,gen_error,
+GPT-5.6 Terra,18,brutal,False,gen_error,
+GPT-5.6 Terra,19,brutal,False,gen_error,
+GPT-5.6 Terra,20,brutal,False,gen_error,
+Kimi K3,1,hard,False,gen_error,
+Kimi K3,2,hard,False,gen_error,
+Kimi K3,3,hard,False,gen_error,
+Kimi K3,4,hard,False,gen_error,
+Kimi K3,5,hard,False,gen_error,
+Kimi K3,6,hard,False,gen_error,
+Kimi K3,7,hard,False,gen_error,
+Kimi K3,8,hard,False,gen_error,
+Kimi K3,9,brutal,False,gen_error,
+Kimi K3,10,brutal,False,gen_error,
+Kimi K3,11,brutal,False,gen_error,
+Kimi K3,12,brutal,False,gen_error,
+Kimi K3,13,brutal,False,gen_error,
+Kimi K3,14,brutal,False,gen_error,
+Kimi K3,15,brutal,False,gen_error,
+Kimi K3,16,brutal,False,gen_error,
+Kimi K3,17,brutal,False,gen_error,
+Kimi K3,18,brutal,False,gen_error,
+Kimi K3,19,brutal,False,gen_error,
+Kimi K3,20,brutal,False,gen_error,
+Grok 4.5,1,hard,False,gen_error,
+Grok 4.5,2,hard,False,gen_error,
+Grok 4.5,3,hard,False,gen_error,
+Grok 4.5,4,hard,False,gen_error,
+Grok 4.5,5,hard,False,gen_error,
+Grok 4.5,6,hard,False,gen_error,
+Grok 4.5,7,hard,False,gen_error,
+Grok 4.5,8,hard,False,gen_error,
+Grok 4.5,9,brutal,False,gen_error,
+Grok 4.5,10,brutal,False,gen_error,
+Grok 4.5,11,brutal,False,gen_error,
+Grok 4.5,12,brutal,False,gen_error,
+Grok 4.5,13,brutal,False,gen_error,
+Grok 4.5,14,brutal,False,gen_error,
+Grok 4.5,15,brutal,False,gen_error,
+Grok 4.5,16,brutal,False,gen_error,
+Grok 4.5,17,brutal,False,gen_error,
+Grok 4.5,18,brutal,False,gen_error,
+Grok 4.5,19,brutal,False,gen_error,
+Grok 4.5,20,brutal,False,gen_error,
+Claude Sonnet 5,1,hard,False,gen_error,
+Claude Sonnet 5,2,hard,False,gen_error,
+Claude Sonnet 5,3,hard,False,gen_error,
+Claude Sonnet 5,4,hard,False,gen_error,
+Claude Sonnet 5,5,hard,False,gen_error,
+Claude Sonnet 5,6,hard,False,gen_error,
+Claude Sonnet 5,7,hard,False,gen_error,
+Claude Sonnet 5,8,hard,False,gen_error,
+Claude Sonnet 5,9,brutal,False,gen_error,
+Claude Sonnet 5,10,brutal,False,gen_error,
+Claude Sonnet 5,11,brutal,False,gen_error,
+Claude Sonnet 5,12,brutal,False,gen_error,
+Claude Sonnet 5,13,brutal,False,gen_error,
+Claude Sonnet 5,14,brutal,False,gen_error,
+Claude Sonnet 5,15,brutal,False,gen_error,
+Claude Sonnet 5,16,brutal,False,gen_error,
+Claude Sonnet 5,17,brutal,False,gen_error,
+Claude Sonnet 5,18,brutal,False,gen_error,
+Claude Sonnet 5,19,brutal,False,gen_error,
+Claude Sonnet 5,20,brutal,False,gen_error,
+MiniMax M3,1,hard,False,gen_error,
+MiniMax M3,2,hard,False,gen_error,
+MiniMax M3,3,hard,False,gen_error,
+MiniMax M3,4,hard,False,gen_error,
+MiniMax M3,5,hard,True,match,"SELECT batter, SUM(batsman_runs) AS total_runs
+FROM deliveries
+GROUP BY match_id, batter
+ORDER BY total_runs DESC
+LIMIT 1"
+MiniMax M3,6,hard,False,gen_error,
+MiniMax M3,7,hard,False,gen_error,
+MiniMax M3,8,hard,False,gen_error,
+MiniMax M3,9,brutal,False,mismatch,"WITH batter_stats AS (
+  SELECT 
+    batter,
+    SUM(batsman_runs) AS runs,
+    SUM(CASE WHEN extras_type != 'wide' THEN 1 ELSE 0 END) AS legal_balls
+  FROM deliveries
+  GROUP BY batter
+  HAVING runs >= 300 AND legal_balls > 0
+)
+SELECT 
+  batter,
+  ROUND(CAST(runs AS REAL) * 100.0 / legal_balls, 2) AS strike_rate
+FROM batter_stats
+ORDER BY strike_rate DESC
+LIMIT 1"
+MiniMax M3,10,brutal,False,mismatch,"SELECT bowler, 
+       (SUM(batsman_runs) + SUM(CASE WHEN extras_type NOT IN ('wides', 'no_balls', 'noballs', 'wide', 'no ball') THEN extra_runs ELSE 0 END)) * 6.0 / SUM(CASE WHEN extras_type NOT IN ('wides', 'no_balls', 'noballs', 'wide', 'no ball') THEN 1 ELSE 0 END) AS economy
+FROM deliveries
+GROUP BY bowler
+HAVING SUM(CASE WHEN extras_type NOT IN ('wides', 'no_balls', 'noballs', 'wide', 'no ball') THEN 1 ELSE 0 END) >= 1000
+ORDER BY economy ASC
+LIMIT 1"
+MiniMax M3,11,brutal,False,mismatch,"SELECT bowler,
+       CAST(SUM(batsman_runs + extra_runs) AS REAL) / SUM(is_wicket) AS bowling_average
+FROM deliveries
+WHERE is_wicket = 1
+  AND dismissal_kind NOT IN ('run out', 'retired hurt', 'retired out', 'obstructing the field')
+GROUP BY bowler
+HAVING SUM(is_wicket) >= 30
+ORDER BY bowling_average ASC
+LIMIT 1"
+MiniMax M3,12,brutal,True,match,"WITH season_team_runs AS (
+  SELECT 
+    m.season,
+    d.batting_team,
+    SUM(d.total_runs) AS runs
+  FROM deliveries d
+  JOIN matches m ON d.match_id = m.id
+  GROUP BY m.season, d.batting_team
+),
+ranked AS (
+  SELECT 
+    season,
+    batting_team,
+    runs,
+    RANK() OVER (PARTITION BY season ORDER BY runs DESC) AS rnk
+  FROM season_team_runs
+)
+SELECT season, batting_team AS team, runs
+FROM ranked
+WHERE rnk = 1
+ORDER BY season"
+MiniMax M3,13,brutal,False,gen_error,
+MiniMax M3,14,brutal,True,match,"SELECT winner, target_runs
+FROM matches
+WHERE target_runs IS NOT NULL
+  AND result = 'wickets'
+ORDER BY target_runs DESC
+LIMIT 1"
+MiniMax M3,15,brutal,False,gen_error,
+MiniMax M3,16,brutal,False,gen_error,
+MiniMax M3,17,brutal,False,gen_error,
+MiniMax M3,18,brutal,False,mismatch,"WITH team_matches AS (
+  SELECT team, COUNT(*) AS matches_played
+  FROM (
+    SELECT team1 AS team FROM matches WHERE season = '2023'
+    UNION ALL
+    SELECT team2 AS team FROM matches WHERE season = '2023'
+  )
+  GROUP BY team
+  HAVING COUNT(*) >= 5
+),
+team_wins AS (
+  SELECT winner AS team, COUNT(*) AS wins
+  FROM matches
+  WHERE season = '2023' AND winner IS NOT NULL
+  GROUP BY winner
+)
+SELECT tm.team, 
+       ROUND(100.0 * COALESCE(tw.wins, 0) / tm.matches_played, 2) AS win_percentage
+FROM team_matches tm
+LEFT JOIN team_wins tw ON tm.team = tw.team
+ORDER BY win_percentage DESC
+LIMIT 1"
+MiniMax M3,19,brutal,False,gen_error,
+MiniMax M3,20,brutal,False,sql_error,"SELECT AVG(first_innings_total) FROM (
+  SELECT d.match_id, SUM(d.total_runs) AS first_innings_total
+  FROM deliveries d
+  WHERE d.inning = 1
+  AND d.match"

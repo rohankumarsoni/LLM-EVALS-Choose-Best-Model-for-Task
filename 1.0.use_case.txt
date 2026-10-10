@@ -1,0 +1,183 @@
+================================================================================
+CASE STUDY: TEXT-TO-SQL ENGINE FOR ESPN CRICINFO
+================================================================================
+
+GOAL
+----
+Select the ONE best model for this task.
+
+Building a Text-to-SQL engine for ESPN Cricinfo is the running example used
+to show how to run custom model evaluations for a specific application.
+
+
+THREE-STEP FRAMEWORK
+--------------------
+  Step 1  ->  Requirement Gathering
+  Step 2  ->  Leaderboard Filtering
+  Step 3  ->  Custom Evaluation Pipeline
+
+
+
+================================================================================
+STEP 1: REQUIREMENT GATHERING
+================================================================================
+Define the operational constraints: monthly budget ceiling, latency target,
+and the need for high accuracy so the model does not hallucinate when
+answering cricket-related questions.
+
+
+1.1  Task
+-----------
+Text-to-SQL
+
+
+1.2  Cost
+-----------
+Budget: 300k per month (INR)
+
+Estimates:
+  - Average input tokens per query  : 400
+  - Average output tokens per query : 100
+  - Questions per day               : 50,000
+
+Example: estimating the cost for Claude Fable 5
+  Pricing: Input = 10 USD per 1M tokens | Output = 50 USD per 1M tokens
+
+  Cost per query:
+    (10 / 1,000,000) * 400  +  (50 / 1,000,000) * 100
+    = 0.004 + 0.005
+    = 0.009 USD per query
+
+  Cost per day:
+    0.009 * 50,000 = 450 USD per day
+
+  Cost per month:
+    450 * 30 = 13,500 USD per month
+
+  Cost per month in INR:
+    13,500 * 95 = 12.82 lakh per month
+
+  Result:
+    COST (12.82L)  >>  BUDGET (3L)
+
+  Decision:
+    - We CANNOT use Claude Fable 5 because of budget constraints.
+    - Look for a cheaper model.
+
+
+    ************************************************************************
+    SIDE NOTE: PROMPT CACHING
+    ************************************************************************
+    What it is:
+      The model provider saves the repeated part of your prompt (like a long
+      system prompt, documents, or examples) so it does not reprocess it on
+      every request.
+
+    Why it helps:
+      - Cheaper : cached input tokens cost much less than fresh ones.
+      - Faster  : the model skips re-reading the same text.
+
+    Example:
+      You send a 50-page document with every question. The first request
+      processes it normally. Later requests reuse the cached copy, so you only
+      pay full price for the new question.
+
+    Tip:
+      Put the fixed content (instructions, documents) at the START of the
+      prompt and the changing part (the user's question) at the END.
+      The cache only works when the beginning of the prompt is identical
+      across requests.
+    ************************************************************************
+
+
+1.3  Latency
+--------------
+2-3 seconds
+
+
+1.4  Context Window
+---------------------
+Does not matter for this use case.
+
+
+1.5  Deployment
+-----------------
+Open-source models are an option (no possibility of a data breach).
+
+
+1.6  Correctness
+------------------
+High accuracy is required (no hallucinations on cricket-related questions).
+
+
+
+================================================================================
+STEP 2: LEADERBOARD FILTERING
+================================================================================
+Shortlist the top candidate LLMs (5 to 10) by balancing:
+  - Performance
+  - Cost
+  - Speed
+
+Also filter out benchmarks that are not representative of real-world database
+tasks.
+
+
+
+================================================================================
+STEP 3: CUSTOM EVALUATION PIPELINE
+================================================================================
+Build a golden dataset of complex, high-difficulty questions, then build an
+evaluation loop that runs the model-generated SQL against a database and
+compares the results with ground-truth data.
+
+
+3.1  Dataset
+--------------
+Collect the questions users are likely to ask.
+
+
+3.2  Golden Dataset
+---------------------
+  - 30 to 50 questions
+  - Each question has a correct SQL query, written and validated by a human
+  - Should represent all possible user questions
+
+
+3.3  Evaluation
+-----------------
+For each question (Q1, Q2, ...):
+
+  Q1 --> LLM --> LLM output (SQL) --> run in database --> Table 1
+
+  Q1 --> Human-written SQL (from golden dataset) --> run in database --> Table 2
+
+  Compare:  Table 1 == Table 2 ?
+              - Yes -> correct
+              - No  -> incorrect
+
+  Then calculate accuracy:
+    accuracy = (number of correct answers) / (total questions)
+
+
+3.4  Repeat for All Shortlisted Models
+----------------------------------------
+Run the same evaluation for every shortlisted model and compare accuracy to
+see which one performs best for our use case.
+
+
+
+================================================================================
+QUICK FLOW SUMMARY
+================================================================================
+  Requirements (budget, latency, accuracy)
+        |
+        v
+  Leaderboard filtering (shortlist 5-10 models)
+        |
+        v
+  Custom evaluation (golden dataset -> run SQL -> compare -> accuracy)
+        |
+        v
+  Pick the best model for the use case
+================================================================================
